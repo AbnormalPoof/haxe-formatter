@@ -25,7 +25,7 @@ enum Result {
 	Disabled;
 }
 
-class Formatter {
+@:expose class Formatter {
 	static inline var FORMATTER_JSON:String = "hxformat.json";
 
 	public static function format(input:FormatterInput, ?config:Config, ?lineSeparator:String, ?entryPoint:TokenTreeEntryPoint, ?range:FormatterInputRange,
@@ -86,6 +86,24 @@ class Formatter {
 				return formatInputData(inputData);
 		}
 		return Failure("implement me");
+	}
+
+	public static function formatString(input:String, ?configData:String):String {
+		var config = loadConfigString(configData);
+		var result:Result = format(Code(input, Snippet), config);
+
+		switch (result) {
+			case Success(formattedCode):
+				return formattedCode;
+			default:
+				return "Formatting failed!!";
+		}
+	}
+
+	public static function loadConfigString(configData:String):Null<Config> {
+		var config = new Config();
+		config.readConfigFromString(configData, "hxformat.json");
+		return config;
 	}
 
 	#if (sys || nodejs)
